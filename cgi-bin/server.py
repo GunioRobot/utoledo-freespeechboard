@@ -9,8 +9,10 @@ UDPSock.bind(addr)
 
 while 1:
 	data, addr = UDPSock.recvfrom(buf)
-	if data:
-		f = open('msg', 'w')	# only supporting one msg for now
-		f.writeline(data)
-		f.close()
+	if not data:
+		print "Client has exited!"
+		break
+	else:
+		print "\nReceived message '", data, "'"
 
+UDPSock.close()
