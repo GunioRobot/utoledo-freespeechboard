@@ -4,6 +4,31 @@
 <meta http-equiv="content-type" content="text/xml; charset=utf-8" />
 
 <title>Free Speech Board</title>
+
+<script type="text/javascript">
+<!--
+function nav(){
+  location.href = "cgi-bin/addmsg.py";
+}
+
+function addLoadEvent(func) {
+  var oldonload = window.onload;
+  if (typeof window.onload != 'function') {
+    window.onload = func;
+  } else {
+    window.onload = function() {
+      if (oldonload) {
+        oldonload();
+      }
+      func();
+    }
+  }
+}
+
+addLoadEvent(nav);
+//-->
+</script>
+
 </head>
 
 <body>

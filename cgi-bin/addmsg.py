@@ -18,7 +18,8 @@ print "</head>"
 
 print "<body>"
 print "<h1>Free Speech Board</h1>"
-print form["newmsg"].value
+if "newmsg" in form:
+	print form["newmsg"].value
 print "</br></br>"
 print "<form action = \"addmsg.py\" method = \"get\">"
 print "  Message:</br>"
