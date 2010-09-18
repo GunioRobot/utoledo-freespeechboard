@@ -1,11 +1,16 @@
 #!/usr/bin/python
 
-#import couchdb
-#couch = couchdb.Server()
-#if 'fsb-test' in couch:
-#	db = couch['fsb-test']
-#else:
-#	db = couch.create('fsb-test')
+import couchdb
+couch = couchdb.Server()
+if 'fsb-test' in couch:
+	db = couch['fsb-test']
+else:
+	db = couch.create('fsb-test')
+
+# Map Function: Get all document messages
+map_fun = '''function(doc) {
+	emit(doc.message, null);
+}'''
 
 
 print "Content-Type: text/html\n\n"
@@ -48,22 +53,20 @@ print '		<TH WIDTH=507>'
 print '			<P>Message</P>'
 print '		</TH>'
 print '	</TR>'
-print '	<TR VALIGN=TOP>'
-print '		<TD WIDTH=160 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=507>'
-print '			<P>Cats rule!</P>'
-print '		</TD>'
-print '	</TR>'
-print '	<TR VALIGN=TOP>'
-print '		<TD WIDTH=160 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=507>'
-print '			<P>LAME</P>'
-print '		</TD>'
-print '	</TR>'
+
+# Print messages
+for row in db.query(map_fun):
+	print '	<TR VALIGN=TOP>'
+	print '		<TD WIDTH=160 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
+	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
+	print '		</TD>'
+	print '		<TD WIDTH=507>'
+	print '			<P>'
+	print row.key
+	print '			</P>'
+	print '		</TD>'
+	print '	</TR>'
+
 print '</TABLE>'
 print '<form action = "addmsg.py" method = "get">'
 print '  Message:</br>'
