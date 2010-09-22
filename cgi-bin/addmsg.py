@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import time
-now = time.localtime()
 
 import couchdb
 #from couchdb.mapping import TextField, IntegerField, DateField, DictField
@@ -33,7 +32,7 @@ if 'newmsg' in form:
 		db = couch.create('fsb-test')
 
 	# Simplified code for testing:
-	doc = {'message': form["newmsg"].value}
+	doc = {'timestamp': time.time(), 'message': form["newmsg"].value}
 	db.create(doc)
 
 # Print the required header that tells the browser how to render the text.

@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import time
+
 import couchdb
 couch = couchdb.Server()
 if 'fsb-test' in couch:
@@ -7,8 +9,11 @@ if 'fsb-test' in couch:
 else:
 	db = couch.create('fsb-test')
 
-# Map Function: Get all document messages
-map_fun = '''function(doc) {
+# Map Function: Get values from documents
+time_map_fun = '''function(doc) {
+	emit(doc.timestamp, null);
+}'''
+msg_map_fun = '''function(doc) {
 	emit(doc.message, null);
 }'''
 
@@ -55,10 +60,17 @@ print '		</TH>'
 print '	</TR>'
 
 # Print messages
-for row in db.query(map_fun):
+i = 0
+for row in db.query(msg_map_fun):
 	print '	<TR VALIGN=TOP>'
 	print '		<TD WIDTH=160 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
+	print '			<P ALIGN=CENTER>'
+	j = 0
+	for row2 in db.query(time_map_fun):	# will try to find a better way...
+		if i == j:
+			print time.asctime(time.localtime(row2.key))
+		j += 1
+	print '</P>'
 	print '		</TD>'
 	print '		<TD WIDTH=507>'
 	print '			<P>'
@@ -66,6 +78,7 @@ for row in db.query(map_fun):
 	print '			</P>'
 	print '		</TD>'
 	print '	</TR>'
+	i += 1
 
 print '</TABLE>'
 print '<form action = "addmsg.py" method = "get">'
