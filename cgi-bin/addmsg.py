@@ -1,39 +1,31 @@
 #!/usr/bin/python
 
 import time
-
 import couchdb
-#from couchdb.mapping import TextField, IntegerField, DateField, DictField
-
-# Ideal document format, not implemented yet.
-#class ThreadDoc(Document):
-#	subject = TextField()
-#	updated = DateTimeField(default=datetime.now)
-#	messages = DictField(Mapping.build(
-#		index = IntegerField(),
-#		messageItem = DictField(Mapping.build(
-#			timestamp = DateTimeField(default=datetime.now),
-#			messageText = TextField()
-#		))
-#	))
-
-# Import the CGI module
 import cgi
 import cgitb
-cgitb.enable()
+cgitb.enable()					# enable debugging
 
 form = cgi.FieldStorage()
 
 if 'newmsg' in form:
-	couch = couchdb.Server()
-	if 'fsb-test' in couch:
-		db = couch['fsb-test']
-	else:
-		db = couch.create('fsb-test')
+	couch = couchdb.Server()		# connect to server
 
-	# Simplified code for testing:
-	doc = {'timestamp': time.time(), 'message': form["newmsg"].value}
-	db.create(doc)
+	if 'fsb-test' in couch:
+		db = couch['fsb-test']		# get database
+	else:
+		db = couch.create('fsb-test')	# or create new database
+
+	if 'thread0' in db:
+		doc = db['thread0']		# get document
+	else:
+		doc = {}			# or create new document
+
+	# add new message to working copy of document
+	doc[str(len(doc))] = {'timestamp': time.time(), 'message': form["newmsg"].value}
+
+	# replace old copy in database with working copy
+	db['thread0'] = doc
 
 # Print the required header that tells the browser how to render the text.
 print "Content-Type: text/html\n\n"
