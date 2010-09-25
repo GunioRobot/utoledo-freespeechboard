@@ -70,7 +70,8 @@ for thread in db:
 	print '		</TD>'
 	print '		<TD WIDTH=380>'
 	print '			<P><A HREF="topic-render.py">'
-	print thread					# prints the thread's key
+	if 'subject' in db[thread]:
+		print db[thread]['subject']
 	print '			</A></P>'
 	print '		</TD>'
 	print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
@@ -83,7 +84,10 @@ for thread in db:
 	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
 	print '		</TD>'
 	print '		<TD WIDTH=136 SDVAL="5" SDNUM="1033;">'
-	print '			<P ALIGN=CENTER>5</P>'
+	print '			<P ALIGN=CENTER>'
+	if 'msgs' in db[thread]:
+		print len(db[thread]['msgs'])
+	print '			</P>'
 	print '		</TD>'
 	print '	</TR>'
 
