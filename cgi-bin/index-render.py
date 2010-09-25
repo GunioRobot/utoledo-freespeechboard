@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import time
 import couchdb
 
 couch = couchdb.Server()		# connect to server
@@ -73,7 +74,10 @@ for thread in db:
 	print '			</A></P>'
 	print '		</TD>'
 	print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
+	print '			<P ALIGN=CENTER>'
+	if 'createtime' in db[thread]:
+		print time.asctime(time.localtime(db[thread]['createtime']))
+	print '			</P>'
 	print '		</TD>'
 	print '		<TD WIDTH=168 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
 	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'

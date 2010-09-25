@@ -9,6 +9,8 @@ cgitb.enable()					# enable debugging
 form = cgi.FieldStorage()
 
 if 'newtopic' in form:
+	subject = form["newtopic"].value
+
 	couch = couchdb.Server()		# connect to server
 
 	if 'fsb-test' in couch:
@@ -16,8 +18,8 @@ if 'newtopic' in form:
 	else:
 		db = couch.create('fsb-test')	# or create new database
 
-	doc = {}				# create empty topic
-	db[form["newtopic"].value] = doc	# add new topic to database
+	doc = {'subject': subject, 'createtime': time.time(), 'msgs': {}}	# create empty topic
+	db[subject] = doc			# add new topic to database
 
 
 # Print the required header that tells the browser how to render the text.
