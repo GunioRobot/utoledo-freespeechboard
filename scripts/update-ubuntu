@@ -1,0 +1,4 @@
+#!/bin/bash
+sudo cp -r -u ../html/* /var/www/
+sudo cp -r -u ../cgi-bin/* /usr/lib/cgi-bin/
+
