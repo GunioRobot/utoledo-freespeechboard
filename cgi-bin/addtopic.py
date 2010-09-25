@@ -8,7 +8,7 @@ cgitb.enable()					# enable debugging
 
 form = cgi.FieldStorage()
 
-if 'newmsg' in form:
+if 'newtopic' in form:
 	couch = couchdb.Server()		# connect to server
 
 	if 'fsb-test' in couch:
@@ -16,16 +16,9 @@ if 'newmsg' in form:
 	else:
 		db = couch.create('fsb-test')	# or create new database
 
-	if 'thread0' in db:
-		doc = db['thread0']		# get document
-	else:
-		doc = {}			# or create new document
+	doc = {}				# create empty topic
+	db[form["newtopic"].value] = doc	# add new topic to database
 
-	# add new message to working copy of document
-	doc[str(len(doc))] = {'timestamp': time.time(), 'message': form["newmsg"].value}
-
-	# replace old copy in database with working copy
-	db['thread0'] = doc
 
 # Print the required header that tells the browser how to render the text.
 print "Content-Type: text/html\n\n"
@@ -39,13 +32,13 @@ print "</head>"
 print "<body>"
 print "<h1>Free Speech Board</h1>"
 
-if "newmsg" in form:
-	print "<p>Added message: "
-	print form["newmsg"].value
+if "newtopic" in form:
+	print "<p>Added topic: "
+	print form["newtopic"].value
 	print "</p>"
 
 else:
-	print "<p>Error: No message</p>"
+	print "<p>Error: No topic</p>"
 print "</body>"
 print "</html>"
 
