@@ -16,6 +16,8 @@ class Node(DatagramProtocol):
 
     # Multicast a version string
     def sendVersion(self, datagram, address):
+	#Need to get _rev for a *document*, not a db. Need to explore
+	#this comparison issue further.
 	myverstring = "Rev:" + db[_rev] + ";Address:" + address
         self.transport.write("Rev:12345;Address:123.456.78.910", address)
 
@@ -23,7 +25,6 @@ class Node(DatagramProtocol):
 	versionstring = repr(datagram)
 
     def replcateDB(self, source, target):
-	#Create a server object and set db to be the 'fsb-test' database
-	s = Server()
-	db = s['fsb-test']
+	#need to fill code in in this section to
+	#make sure the order is correct
 	s.replicate(source, target, False)
