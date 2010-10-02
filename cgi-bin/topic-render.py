@@ -41,7 +41,10 @@ print '<H4 CLASS="western"><A HREF="index-render.py">Back to List of'
 print 'Topics</A></H4>'
 
 for thread in db:
-	print '<H2 CLASS="western">Topic: I like cats</H2>'
+	print '<H2 CLASS="western">Topic: '
+	if 'subject' in db[thread]:
+		print db[thread]['subject']
+	print '</H2>'
 	print '<TABLE WIDTH=683 BORDER=0 CELLPADDING=4 CELLSPACING=0>'
 	print '	<COL WIDTH=160>'
 	print '	<COL WIDTH=507>'
@@ -55,17 +58,17 @@ for thread in db:
 	print '	</TR>'
 
 	# Print messages
-	for msg in db[thread]:
-		if 'message' in db[thread][msg]:	# filter out _id and _rev fields
+	for msg in db[thread]['msgs']:
+		if 'message' in db[thread]['msgs'][msg]:	# filter out _id and _rev fields
 			print '	<TR VALIGN=TOP>'
 			print '		<TD WIDTH=160 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
 			print '			<P ALIGN=CENTER>'
-			print time.asctime(time.localtime(db[thread][msg]['timestamp']))
+			print time.asctime(time.localtime(db[thread]['msgs'][msg]['timestamp']))
 			print '</P>'
 			print '		</TD>'
 			print '		<TD WIDTH=507>'
 			print '			<P>'
-			print db[thread][msg]['message']
+			print db[thread]['msgs'][msg]['message']
 			print '			</P>'
 			print '		</TD>'
 			print '	</TR>'
@@ -73,7 +76,9 @@ for thread in db:
 	print '</TABLE>'
 	print '<form action = "addmsg.py" method = "get">'
 	print '  Message:</br>'
-	print '  <textarea name="newmsg" cols=60 rows=6></textarea></br>'
+	print '  <textarea name="'
+	print thread
+	print '" cols=60 rows=6></textarea></br>'
 	print '  <input type="submit" value="Submit" />'
 	print '</form>'
 	print '<P><BR><BR>'

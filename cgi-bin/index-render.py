@@ -1,5 +1,16 @@
 #!/usr/bin/python
 
+import time
+import couchdb
+
+couch = couchdb.Server()		# connect to server
+
+if 'fsb-test' in couch:
+	db = couch['fsb-test']		# get database
+else:
+	db = couch.create('fsb-test')	# or create new database
+
+
 print "Content-Type: text/html\n\n"
 
 print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'
@@ -51,78 +62,43 @@ print '		<TH WIDTH=136>'
 print '			<P>Number of Posts</P>'
 print '		</TH>'
 print '	</TR>'
-print '	<TR VALIGN=TOP>'
-print '		<TD WIDTH=24 SDVAL="1" SDNUM="1033;">'
-print '			<P>1</P>'
-print '		</TD>'
-print '		<TD WIDTH=380>'
-print '			<P><A HREF="topic-render.py">I like cats</A></P>'
-print '		</TD>'
-print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=168 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=136 SDVAL="5" SDNUM="1033;">'
-print '			<P ALIGN=CENTER>5</P>'
-print '		</TD>'
-print '	</TR>'
-print '	<TR VALIGN=TOP>'
-print '		<TD WIDTH=24 SDVAL="2" SDNUM="1033;">'
-print '			<P>2</P>'
-print '		</TD>'
-print '		<TD WIDTH=380>'
-print '			<P>Dogs rule!</P>'
-print '		</TD>'
-print '		<TD WIDTH=176 SDVAL="40426" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/05/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=168 SDVAL="40426" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/05/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=136 SDVAL="4" SDNUM="1033;">'
-print '			<P ALIGN=CENTER>4</P>'
-print '		</TD>'
-print '	</TR>'
-print '	<TR VALIGN=TOP>'
-print '		<TD WIDTH=24 SDVAL="3" SDNUM="1033;">'
-print '			<P>3</P>'
-print '		</TD>'
-print '		<TD WIDTH=380>'
-print '			<P>Beekeeping for fun and profit</P>'
-print '		</TD>'
-print '		<TD WIDTH=176 SDVAL="40425" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/04/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=168 SDVAL="40425" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/04/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=136 SDVAL="3" SDNUM="1033;">'
-print '			<P ALIGN=CENTER>3</P>'
-print '		</TD>'
-print '	</TR>'
-print '	<TR VALIGN=TOP>'
-print '		<TD WIDTH=24 SDVAL="4" SDNUM="1033;">'
-print '			<P>4</P>'
-print '		</TD>'
-print '		<TD WIDTH=380>'
-print '			<P>Heelllp I\'m lost</P>'
-print '		</TD>'
-print '		<TD WIDTH=176 SDVAL="40424" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/03/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=168 SDVAL="40424" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-print '			<P ALIGN=CENTER>09/03/10 12:00 AM</P>'
-print '		</TD>'
-print '		<TD WIDTH=136 SDVAL="1" SDNUM="1033;">'
-print '			<P ALIGN=CENTER>1</P>'
-print '		</TD>'
-print '	</TR>'
+
+for thread in db:
+	print '	<TR VALIGN=TOP>'
+	print '		<TD WIDTH=24 SDVAL="1" SDNUM="1033;">'
+	print '			<P>1</P>'
+	print '		</TD>'
+	print '		<TD WIDTH=380>'
+	print '			<P><A HREF="topic-render.py">'
+	if 'subject' in db[thread]:
+		print db[thread]['subject']
+	print '			</A></P>'
+	print '		</TD>'
+	print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
+	print '			<P ALIGN=CENTER>'
+	if 'createtime' in db[thread]:
+		print time.asctime(time.localtime(db[thread]['createtime']))
+	print '			</P>'
+	print '		</TD>'
+	print '		<TD WIDTH=168 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
+	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
+	print '		</TD>'
+	print '		<TD WIDTH=136 SDVAL="5" SDNUM="1033;">'
+	print '			<P ALIGN=CENTER>'
+	if 'msgs' in db[thread]:
+		print len(db[thread]['msgs'])
+	print '			</P>'
+	print '		</TD>'
+	print '	</TR>'
+
 print '</TABLE>'
 print '<H4 CLASS="western"><I><A HREF="../fsb">Show next 100 topics</A>'
 print '</I><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal"><SPAN STYLE="background: #ffff00">(only'
 print 'shown when applicable)</SPAN></SPAN></SPAN></H4>'
+print '<FORM ACTION="addtopic.py">'
+print '	<H2 CLASS="western">Create New Topic:<BR><TEXTAREA NAME="newtopic" ROWS=2 COLS=32 STYLE="width: 2.83in; height: 0.66in"></TEXTAREA><BR><INPUT TYPE=SUBMIT VALUE="Submit" STYLE="width: 0.84in; height: 0.37in">'
+print '		</H2>'
+print '</FORM>'
 print '<P><BR><BR>'
 print '</P>'
 print '</BODY>'
