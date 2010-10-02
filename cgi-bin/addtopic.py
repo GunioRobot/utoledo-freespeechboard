@@ -2,6 +2,7 @@
 
 import time
 import couchdb
+from uuid import uuid4
 import cgi
 import cgitb
 cgitb.enable()					# enable debugging
@@ -19,7 +20,8 @@ if 'newtopic' in form:
 		db = couch.create('fsb-test')	# or create new database
 
 	doc = {'subject': subject, 'createtime': time.time(), 'msgs': {}}	# create empty topic
-	db[subject] = doc			# add new topic to database
+	doc_id = uuid4().hex
+	db[doc_id] = doc			# add new topic to database
 
 
 # Print the required header that tells the browser how to render the text.
