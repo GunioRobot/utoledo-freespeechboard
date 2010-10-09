@@ -3,6 +3,11 @@
 import time
 import couchdb
 
+# define map function
+map_fun = '''function(doc) {
+	emit(doc.updatetime, [doc.subject, doc.createtime, doc.updatetime, doc.msgs])
+}'''
+
 couch = couchdb.Server()		# connect to server
 
 if 'fsb-test' in couch:
@@ -63,38 +68,36 @@ print '			<P>Number of Posts</P>'
 print '		</TH>'
 print '	</TR>'
 
-for thread in db:
+# get rows (represent docs) sorted by updatetime
+for row in db.query(map_fun, descending=True):
 	print '	<TR VALIGN=TOP>'
 	print '		<TD WIDTH=24 SDVAL="1" SDNUM="1033;">'
 	print '			<P>1</P>'
 	print '		</TD>'
 	print '		<TD WIDTH=380>'
 	print '			<P><A HREF="topic-render.py">'
-	if 'subject' in db[thread]:
-		print db[thread]['subject']
+	print row.value[0]
 	print '			</A></P>'
 	print '		</TD>'
 	print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
 	print '			<P ALIGN=CENTER>'
-	if 'createtime' in db[thread]:
-		print time.asctime(time.localtime(db[thread]['createtime']))
+	print time.asctime(time.localtime(row.value[1]))
 	print '			</P>'
 	print '		</TD>'
 	print '		<TD WIDTH=168 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-	print '			<P ALIGN=CENTER>09/06/10 12:00 AM</P>'
+	print '			<P ALIGN=CENTER>'
+	print time.asctime(time.localtime(row.value[2]))
+	print '			</P>'
 	print '		</TD>'
 	print '		<TD WIDTH=136 SDVAL="5" SDNUM="1033;">'
 	print '			<P ALIGN=CENTER>'
-	if 'msgs' in db[thread]:
-		print len(db[thread]['msgs'])
+	print len(row.value[3])
 	print '			</P>'
 	print '		</TD>'
 	print '	</TR>'
 
 print '</TABLE>'
-print '<H4 CLASS="western"><I><A HREF="../fsb">Show next 100 topics</A>'
-print '</I><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: normal"><SPAN STYLE="background: #ffff00">(only'
-print 'shown when applicable)</SPAN></SPAN></SPAN></H4>'
+print '<H4 CLASS="western"><I><A HREF="../fsb">Show next 100 topics</A></I></H4>'
 print '<FORM ACTION="addtopic.py">'
 print '	<H2 CLASS="western">Create New Topic:<BR><TEXTAREA NAME="newtopic" ROWS=2 COLS=32 STYLE="width: 2.83in; height: 0.66in"></TEXTAREA><BR><INPUT TYPE=SUBMIT VALUE="Submit" STYLE="width: 0.84in; height: 0.37in">'
 print '		</H2>'

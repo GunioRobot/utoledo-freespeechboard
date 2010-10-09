@@ -19,7 +19,7 @@ if 'newtopic' in form:
 	else:
 		db = couch.create('fsb-test')	# or create new database
 
-	doc = {'subject': subject, 'createtime': time.time(), 'msgs': {}}	# create empty topic
+	doc = {'subject': subject, 'createtime': time.time(), 'updatetime': time.time(), 'msgs': {}}	# create empty topic
 	doc_id = uuid4().hex
 	db[doc_id] = doc			# add new topic to database
 

@@ -36,6 +36,7 @@ for thread in form:
 		msgs[str(len(msgs))] = {'timestamp': time.time(), 'message': form[thread].value}
 
 		doc['msgs'] = msgs		# store updated msgs in doc
+		doc['updatetime'] = time.time()
 		db[thread] = doc		# store updated doc in db
 
 		print "<p>Added message: "
