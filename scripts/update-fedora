@@ -1,0 +1,3 @@
+#!/bin/bash
+su -c 'cp -r -u ../html /var/www/ && cp -r -u ../cgi-bin /var/www/'
+
