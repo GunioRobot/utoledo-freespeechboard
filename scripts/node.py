@@ -4,6 +4,7 @@ from twisted.application.internet import MulticastServer
 import couchdb
 import hashlib
 import string
+import socket
 
 class Node(DatagramProtocol):    
 
@@ -20,12 +21,20 @@ class Node(DatagramProtocol):
 		self.transport.joinGroup('224.0.0.1')
 
 
+	#sendHash
+	def sendHash(self):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+		sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+		myverstring = self.hashFun(self.db)
+		sock.sendto(myverstring, ("224.0.0.1", 8888))
+		sock.close()
+
+
 	# Multicast a version string
-	def sendHash(self, datagram, address):
-		#Need to get _rev for a *document*, not a db. Need to explore
-		#this comparison issue further.
-		myverstring = self.hashFun(self, self.db) + ":" + address
-		self.transport.write(myverstring, address)
+	def datagramReceived(self, datagram, address):
+		if evalHashString(repr(datagram)) is False:
+			self.replicatedDB("http://127.0.0.1:5984/", "http://" + address[0] + ":5984/")
+			
 
 	#Creates hash to transmit to other nodes
 	def hashFun(self, db):
@@ -37,9 +46,9 @@ class Node(DatagramProtocol):
 	def evalHashString(self, datagram, address):
 		info = string.split(repr(datagram), ':')
 		recvdhash = info[0]	
-		if recvdhash is hashFun():
+		if recvdhash is hashFun(self.db):
 			return true
-		if recvdhash is not hashFun():
+		if recvdhash is not hashFun(self.db):
 			return false
 
 	def replcateDB(self, source, target):
