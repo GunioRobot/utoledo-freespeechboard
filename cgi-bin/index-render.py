@@ -2,6 +2,11 @@
 
 import time
 import couchdb
+import cgi
+import cgitb
+cgitb.enable()					# enable debugging
+
+form = cgi.FieldStorage()
 
 # define map function
 map_fun = '''function(doc) {
@@ -68,36 +73,48 @@ print '			<P>Number of Posts</P>'
 print '		</TH>'
 print '	</TR>'
 
+if 'page' in form:
+	indexPage = int(form['page'].value)
+else:
+	indexPage = 1
+
 # get rows (represent docs) sorted by updatetime
+rowNum = 0
 for row in db.query(map_fun, descending=True):
-	print '	<TR VALIGN=TOP>'
-	print '		<TD WIDTH=24 SDVAL="1" SDNUM="1033;">'
-	print '			<P>1</P>'
-	print '		</TD>'
-	print '		<TD WIDTH=380>'
-	print '			<P><A HREF="topic-render.py">'
-	print row.value[0]
-	print '			</A></P>'
-	print '		</TD>'
-	print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-	print '			<P ALIGN=CENTER>'
-	print time.asctime(time.localtime(row.value[1]))
-	print '			</P>'
-	print '		</TD>'
-	print '		<TD WIDTH=168 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
-	print '			<P ALIGN=CENTER>'
-	print time.asctime(time.localtime(row.value[2]))
-	print '			</P>'
-	print '		</TD>'
-	print '		<TD WIDTH=136 SDVAL="5" SDNUM="1033;">'
-	print '			<P ALIGN=CENTER>'
-	print len(row.value[3])
-	print '			</P>'
-	print '		</TD>'
-	print '	</TR>'
+	if (rowNum >= (indexPage-1)*10) and (rowNum <= (indexPage*10)-1):
+		print '	<TR VALIGN=TOP>'
+		print '		<TD WIDTH=24 SDVAL="1" SDNUM="1033;">'
+		print '			<P>1</P>'
+		print '		</TD>'
+		print '		<TD WIDTH=380>'
+		print '			<P><A HREF="topic-render.py?topicid='
+		print row.id
+		print '">'
+		print row.value[0]
+		print '			</A></P>'
+		print '		</TD>'
+		print '		<TD WIDTH=176 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
+		print '			<P ALIGN=CENTER>'
+		print time.asctime(time.localtime(row.value[1]))
+		print '			</P>'
+		print '		</TD>'
+		print '		<TD WIDTH=168 SDVAL="40427" SDNUM="1033;0;MM/DD/YY HH:MM AM/PM">'
+		print '			<P ALIGN=CENTER>'
+		print time.asctime(time.localtime(row.value[2]))
+		print '			</P>'
+		print '		</TD>'
+		print '		<TD WIDTH=136 SDVAL="5" SDNUM="1033;">'
+		print '			<P ALIGN=CENTER>'
+		print len(row.value[3])
+		print '			</P>'
+		print '		</TD>'
+		print '	</TR>'
+	rowNum = rowNum + 1
 
 print '</TABLE>'
-print '<H4 CLASS="western"><I><A HREF="../fsb">Show next 100 topics</A></I></H4>'
+print '<H4 CLASS="western"><I><A HREF="index-render.py?page='
+print indexPage + 1
+print '">Show next 10 topics</A></I></H4>'
 print '<FORM ACTION="addtopic.py">'
 print '	<H2 CLASS="western">Create New Topic:<BR><TEXTAREA NAME="newtopic" ROWS=2 COLS=32 STYLE="width: 2.83in; height: 0.66in"></TEXTAREA><BR><INPUT TYPE=SUBMIT VALUE="Submit" STYLE="width: 0.84in; height: 0.37in">'
 print '		</H2>'
