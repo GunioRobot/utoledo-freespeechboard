@@ -32,8 +32,8 @@ class Node(DatagramProtocol):
 
 	# Multicast a version string
 	def datagramReceived(self, datagram, address):
-		if evalHashString(repr(datagram)) is False:
-			self.replicatedDB("http://127.0.0.1:5984/", "http://" + address[0] + ":5984/")
+		if self.evalHashString(repr(datagram), address) is False:
+			self.replicateDB("http://127.0.0.1:5984/", "http://" + address[0] + ":5984/")
 			
 
 	#Creates hash to transmit to other nodes
@@ -46,13 +46,13 @@ class Node(DatagramProtocol):
 	def evalHashString(self, datagram, address):
 		info = string.split(repr(datagram), ':')
 		recvdhash = info[0]	
-		if recvdhash is hashFun(self.db):
-			return true
-		if recvdhash is not hashFun(self.db):
-			return false
+		if recvdhash is self.hashFun(self.db):
+			return True
+		if recvdhash is not self.hashFun(self.db):
+			return False
 
-	def replcateDB(self, source, target):
+	def replicateDB(self, source, target):
 		#need to fill code in in this section to
 		#make sure the order is correct
-		s.replicate(source, target, False)
+		self.s.replicate(source, target, continuous=False)
 
