@@ -5,6 +5,7 @@ import couchdb
 from uuid import uuid4
 import cgi
 import cgitb
+import getip
 cgitb.enable()					# enable debugging
 
 form = cgi.FieldStorage()
@@ -12,7 +13,7 @@ form = cgi.FieldStorage()
 if 'newtopic' in form:
 	subject = form["newtopic"].value
 
-	couch = couchdb.Server()		# connect to server
+	couch = couchdb.Server('http://' + getip.get_ip_address('wlan0') + ':5984')		# connect to server
 
 	if 'fsb-test' in couch:
 		db = couch['fsb-test']		# get database
