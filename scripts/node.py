@@ -5,16 +5,25 @@ import couchdb
 import hashlib
 import string
 import socket
+import fcntl
+import struct
 
 class Node(DatagramProtocol):    
 
 	s = None
 	db = None
-	myip = ''
+	myip = None
 
-	def __init__(self, ip):
+	# Taken from interwebz
+	# Returns IPv4 Address
+	def get_ip_address(self, ifname):
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915,struct.pack('256s', ifname[:15]))[20:24])
+
+
+	def __init__(self):
 		print 'Opening database...'
-		self.myip = ip
+		self.myip = self.get_ip_address('wlan0')
 		self.s = couchdb.Server('http://' + self.myip + ':5984')
 		self.db = self.s['fsb-test']
 	
