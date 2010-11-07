@@ -73,3 +73,21 @@ class Node(DatagramProtocol):
 		print 'Replicating database...'
 		self.s.replicate(source, target, continuous=False)
 
+	def resolveConflicts(self):
+		print 'Resolving conflicts...'
+		# check each document for conflicts
+		for docID in self.db:
+			print 'docID: ' + docID
+			msgDict = dict()
+			revIter = self.db.revisions(docID)
+			# get each revision in reverse chronological order
+			for rev in revIter:
+				for msg in rev['msgs']:
+					print 'msg: ' + msg
+					timestamp = str(rev['msgs'][msg]['timestamp'])
+					print 'timestamp: ' + timestamp
+					msgDict[timestamp] = rev['msgs'][msg]['message']
+			for key in sorted(msgDict.iterkeys()):
+				print 'key: ' + key
+				print 'msgDict[key]: ' + msgDict[key]
+
