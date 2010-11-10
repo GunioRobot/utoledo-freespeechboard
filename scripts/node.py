@@ -14,6 +14,12 @@ class Node(DatagramProtocol):
 	db = None
 	myip = None
 
+	map_conflicts = '''function(doc) {
+		if(doc._conflicts) {
+			emit(doc._conflicts, null);
+		}
+	}'''
+
 	# Taken from interwebz
 	# Returns IPv4 Address
 	def get_ip_address(self, ifname):
@@ -74,20 +80,9 @@ class Node(DatagramProtocol):
 		self.s.replicate(source, target, continuous=False)
 
 	def resolveConflicts(self):
-		print 'Resolving conflicts...'
+		print 'Checking for conflicts...'
 		# check each document for conflicts
-		for docID in self.db:
-			print 'docID: ' + docID
-			msgDict = dict()
-			revIter = self.db.revisions(docID)
-			# get each revision in reverse chronological order
-			for rev in revIter:
-				for msg in rev['msgs']:
-					print 'msg: ' + msg
-					timestamp = str(rev['msgs'][msg]['timestamp'])
-					print 'timestamp: ' + timestamp
-					msgDict[timestamp] = rev['msgs'][msg]['message']
-			for key in sorted(msgDict.iterkeys()):
-				print 'key: ' + key
-				print 'msgDict[key]: ' + msgDict[key]
+		res = self.db.query(self.map_conflicts)
+		for row in res:
+			print row
 
