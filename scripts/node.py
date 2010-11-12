@@ -133,7 +133,7 @@ class Node(DatagramProtocol):
 				msgdict[timestamp] = doc2['msgs'][msg]['message']
 			index = 0
 			for key in sorted(msgdict.iterkeys()):
-				msgs[index] = {'timestamp': key, 'message': msgdict[key]}
+				msgs[index] = {'timestamp': float(key), 'message': msgdict[key]}
 				index = index + 1
 
 			updatetime = doc1['updatetime']
