@@ -100,26 +100,34 @@ class Node(DatagramProtocol):
 			index = self.contents.find('_id')
 			idnum1 = self.contents[index+6:index+38]
 			index = self.contents.find('_rev', index)
-			rev1 = self.contents[index+7:index+41]
+			index2 = self.contents.find('-', index)
+			rev1 = self.contents[index+7:index+41+(index2-index-8)]
+
 			index = self.contents.find('_id', index)
 			idnum2 = self.contents[index+6:index+38]
 			index = self.contents.find('_rev', index)
-			rev2 = self.contents[index+7:index+41]
+			index2 = self.contents.find('-', index)
+			rev2 = self.contents[index+7:index+41+(index2-index-8)]
 
 			# get conflicting documents
 			self.contents = ""
 			curl.setopt(curl.URL, 'http://' + self.myip + ':5984/fsb-test/' + idnum1 + '?rev='+rev1)
 			curl.perform()
 			doc1 = couchdb.json.decode(self.contents)
-			print doc1
 
 			self.contents = ""
 			curl.setopt(curl.URL, 'http://' + self.myip + ':5984/fsb-test/' + idnum2 + '?rev='+rev2)
 			curl.perform()
 			doc2 = couchdb.json.decode(self.contents)
-			print doc2
 
-			curl.close()
+			if 'error' in doc1:
+				break
+			if 'error' in doc2:
+				break
+			if '_deleted' in doc1:
+				break
+			if '_deleted' in doc2:
+				break
 
 			# merge documents
 			mergedoc = self.db[row.id]
@@ -143,6 +151,23 @@ class Node(DatagramProtocol):
 
 			mergedoc['msgs'] = msgs
 			mergedoc['updatetime'] = updatetime
+
+			# delete one old rev to clear the conflict
+			self.contents = ""
+			curl.setopt(curl.CUSTOMREQUEST, 'DELETE')
+			index1 = rev1.find('-')
+			revnum1 = rev1[0:index1]
+			index2 = rev2.find('-')
+			revnum2 = rev2[0:index2]
+			if revnum1 <= revnum2:
+				idnum = idnum1
+				rev = rev1
+			else:
+				idnum = idnum2
+				rev = rev2
+			curl.setopt(curl.URL, 'http://' + self.myip + ':5984/fsb-test/' + idnum + '?rev=' + rev)
+			curl.perform()
+			curl.close()
 			
 			# save merged document
 			self.db[row.id] = mergedoc
