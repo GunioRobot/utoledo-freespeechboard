@@ -59,7 +59,7 @@ class Node(DatagramProtocol):
 
 	# Multicast a version string
 	def datagramReceived(self, datagram, address):
-		print 'Received hash string'
+		print 'Received hash string: ' + repr(datagram)
 		if self.evalHashString(repr(datagram), address) is False:
 			# pull from remote database
 			self.replicateDB("http://" + address[0] + ":5984/fsb-test", "fsb-test")
@@ -76,10 +76,13 @@ class Node(DatagramProtocol):
 	def evalHashString(self, datagram, address):
 		print 'Evaluating hash string...'
 		info = string.split(repr(datagram), ':')
-		recvdhash = info[0]	
-		if recvdhash is self.hashFun(self.db):
+		recvdhash = info[0]
+		selfHash = self.hashFun(self.db)
+		recvHashStr = recvdhash
+		selfHashStr = repr(repr(selfHash))
+		if recvHashStr == selfHashStr:
 			return True
-		if recvdhash is not self.hashFun(self.db):
+		else:
 			return False
 
 	def replicateDB(self, source, target):
