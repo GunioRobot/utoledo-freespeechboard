@@ -9,7 +9,7 @@ class NodeListener(threading.Thread):
 	def __init__(self):
 		self.n = Node()
 		super(NodeListener,self).__init__()
-	
+
 	def run(self):
 		print 'Starting listener thread...'
 		reactor.listenMulticast(8888, self.n)

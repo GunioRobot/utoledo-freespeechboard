@@ -4,7 +4,7 @@ import threading
 
 class HashSender(threading.Thread):
 
-	n = None	
+	n = None
 
 	def __init__(self):
 		self.n = Node()
@@ -19,4 +19,4 @@ class HashSender(threading.Thread):
 
 
 
-	
+

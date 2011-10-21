@@ -10,7 +10,7 @@ import struct
 import pycurl
 import sys
 
-class Node(DatagramProtocol):    
+class Node(DatagramProtocol):
 
 	s = None
 	db = None
@@ -39,7 +39,7 @@ class Node(DatagramProtocol):
 
 	def body_callback(self, buf):	# for pycurl
 		self.contents = self.contents + buf
-	
+
 
 	#Join group 224.0.0.1
 	def startProtocol(self):
@@ -63,7 +63,7 @@ class Node(DatagramProtocol):
 		if self.evalHashString(repr(datagram), address) is False:
 			# pull from remote database
 			self.replicateDB("http://" + address[0] + ":5984/fsb-test", "fsb-test")
-			
+
 
 	#Creates hash to transmit to other nodes
 	def hashFun(self, db):
@@ -171,7 +171,7 @@ class Node(DatagramProtocol):
 			curl.setopt(curl.URL, 'http://' + self.myip + ':5984/fsb-test/' + idnum + '?rev=' + rev)
 			curl.perform()
 			curl.close()
-			
+
 			# save merged document
 			self.db[row.id] = mergedoc
 			print 'Conflicts resolved!'
